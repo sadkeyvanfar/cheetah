@@ -20,8 +20,6 @@ class PreferenceSavePanel extends PreferenceJPanel {
     private JPanel saveToPanel;
     private JPanel tempDirPanel;
     private JLabel categoryLabel;
-    //  private JButton newButton;
-    //   private JButton editButton;
     private JComboBox<PreferencesDirectoryCategoryDTO> categoryComboBox;
     private JLabel fileExtensionLabel;
     private JTextField fileExtensionTextField;
@@ -45,8 +43,6 @@ class PreferenceSavePanel extends PreferenceJPanel {
 
         saveToPanel = new JPanel();
         categoryLabel = new JLabel("Category");
-        //    newButton = new JButton("New");
-        //     editButton = new JButton("Edit");
         categoryComboBox = new JComboBox<>();
         fileExtensionLabel = new JLabel("File Extensions:");
         fileExtensionTextField = new JTextField(45);
@@ -144,12 +140,6 @@ class PreferenceSavePanel extends PreferenceJPanel {
         gc.insets = rightPadding;
         saveToPanel.add(categoryLabel, gc);
 
-//        gc.gridx = 1;
-//        gc.gridy = 0;
-//        gc.insets = noPadding;
-//        gc.anchor = GridBagConstraints.LINE_START; // LINE_START
-//        saveToPanel.add(newButton, gc);
-
         ////////////Next row ////////////////////////////
         gc.gridy++;
 
@@ -157,12 +147,6 @@ class PreferenceSavePanel extends PreferenceJPanel {
         gc.insets = rightPadding;
         gc.anchor = GridBagConstraints.LINE_START;
         saveToPanel.add(categoryComboBox, gc);
-
-//        gc.gridx = 1;
-//        gc.gridy = 1;
-//        gc.insets = noPadding;
-//        gc.anchor = GridBagConstraints.LINE_START;
-//        saveToPanel.add(editButton, gc);
 
         ///////////////// Next row ////////////////////////////////////////////
         gc.gridy++;
@@ -284,7 +268,6 @@ class PreferenceSavePanel extends PreferenceJPanel {
     }
 
     public PreferencesSaveDTO getPreferenceSaveDTO() {
-        //       PreferencesSaveDTO preferencesSaveDTO = new PreferencesSaveDTO();
         preferencesSaveDTO.setPreferencesDirectoryCategoryDTOs(preferencesDirectoryCategoryDTOs);
         preferencesSaveDTO.setTempDirectory(temporaryDirectoryTextField.getText());
         preferencesSaveDTO.setDatabasePath(databasePathTextField.getText());

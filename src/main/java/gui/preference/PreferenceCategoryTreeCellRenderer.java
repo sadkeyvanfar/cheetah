@@ -17,8 +17,6 @@ public class PreferenceCategoryTreeCellRenderer implements TreeCellRenderer {
 
     private Color textForeground;
     private Color textBackground;
-    private Color selectionForeground;
-    private Color selectionBackground;
 
     private ResourceBundle defaultPreferencesBundle = java.util.ResourceBundle.getBundle("defaultPreferences"); // NOI18N
 
@@ -27,8 +25,6 @@ public class PreferenceCategoryTreeCellRenderer implements TreeCellRenderer {
 
         textForeground = UIManager.getColor("Tree.textForeground");
         textBackground = UIManager.getColor("Tree.textBackground");
-        selectionForeground = UIManager.getColor("Tree.selectionForeground");
-        selectionBackground = UIManager.getColor("Tree.selectionBackground");
     }
 
     @Override

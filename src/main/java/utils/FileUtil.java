@@ -35,7 +35,6 @@ import java.util.List;
 public class FileUtil {
 
     public static void joinDownloadedParts(List<File> files, File path, String fileName) {
-      //  String homeDir = System.getProperty("user.home");
         File outputFile = new File(path + File.separator + outputFile(new File(path + File.separator + fileName)));
 
         FileOutputStream fos;

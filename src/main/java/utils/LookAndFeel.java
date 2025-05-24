@@ -45,21 +45,6 @@ public class LookAndFeel {
         }
     }
 
-    public static void changeLaf(JFrame frame, String laf) {
-        switch (laf) {
-            case "Metal":
-                updateLAF(UIManager.getCrossPlatformLookAndFeelClassName());
-                break;
-            case "Nimbus":
-                updateLAF("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                break;
-            case "System":
-                updateLAF(UIManager.getSystemLookAndFeelClassName());
-                break;
-            case "":
-        }
-    }
-
     public static void changeLaf(JFrame frame, String laf, Dimension topFrameDimension) {
         switch (laf) {
             case "Metal":

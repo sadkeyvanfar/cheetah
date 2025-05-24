@@ -38,7 +38,6 @@ import java.util.Set;
 public class ConnectionUtil {
 
     public static void printHttpURLConnectionHeaders(HttpURLConnection httpURLConnection) {
-        //////////////////////?????????????????????? print hears of response
         Map<String, List<String>> s = httpURLConnection.getHeaderFields();
         Set<Map.Entry<String, List<String>>> set = s.entrySet();
         for (Map.Entry<String, List<String>> ss : set) {
@@ -62,7 +61,6 @@ public class ConnectionUtil {
         String fileName;
         URLConnection conn = url.openConnection();
         String raw = conn.getHeaderField("Content-Disposition");
-        // raw = "attachment; filename=abc.jpg"
         if(raw != null && raw.indexOf('=') != -1) {
             fileName = raw.split("=")[1]; //getting value after '='
         } else {

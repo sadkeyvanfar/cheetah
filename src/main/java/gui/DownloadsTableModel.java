@@ -1,22 +1,3 @@
-/*
- * Cheetah - A Free Fast Downloader
- *
- * Copyright © 2015 Saeed Kayvanfar
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 package gui;
 
 import enums.DownloadStatus;
@@ -25,148 +6,127 @@ import model.Download;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author <a href="kayvanfar.sj@gmail.com">Saeed Kayvanfar</a> 9/10/2015
+ * Table model for managing downloads in a JTable.
+ *
+ * Author: Saeed Kayvanfar
  */
 public class DownloadsTableModel extends AbstractTableModel implements DownloadStatusListener {
 
-    // These are the names for the table's columns.
-    private static final String[] columnNames = {"Name", "Size", "Progress", "Transfer Rate", "Status", "Description"};
+    private static final String[] COLUMN_NAMES = {
+            "Name", "Size", "Progress", "Transfer Rate", "Status", "Description"
+    };
 
-    // These are the classes for each column's values.
-    private static final Class[] columnClasses = {String.class, String.class, JProgressBar.class, String.class, String.class, String.class};
+    private static final Class<?>[] COLUMN_CLASSES = {
+            String.class, String.class, JProgressBar.class, String.class, String.class, String.class
+    };
 
-    // The table's list of downloadDialogs.
-    private List<Download> downloadList = new ArrayList<>();
+    private final List<Download> downloadList = new ArrayList<>();
+
+    public DownloadsTableModel() {}
 
     public List<Download> getDownloadList() {
         return downloadList;
     }
 
-    public DownloadsTableModel() {
-
-    }
-
-    // TODO Maybe used after
     public void setDownloads(List<Download> downloads) {
+        // Unregister listeners from existing downloads
         for (Download download : downloadList) {
             download.deleteDownloadStatusListener(this);
         }
+
         downloadList.clear();
-        this.downloadList = downloads;
+        downloadList.addAll(downloads);
+
+        // Register listeners to new downloads
         for (Download download : downloadList) {
-            // Register to be notified when the downloadDialog changes.
             download.addDownloadStatusListener(this);
         }
+
         fireTableDataChanged();
     }
 
-    // Add a new DownloadDialog to the table.
     public void addDownload(Download download) {
-        // Register to be notified when the download changes.
-        download.addDownloadStatusListener(this);
-
-        downloadList.add(download); //todo must check first
-
-        // Fire table row insertion notification to table.
-        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+        if (!downloadList.contains(download)) {
+            download.addDownloadStatusListener(this);
+            downloadList.add(download);
+            int newRow = downloadList.size() - 1;
+            fireTableRowsInserted(newRow, newRow);
+        }
     }
 
-    // Get a download for the specified row.
     public Download getDownload(int row) {
         return downloadList.get(row);
     }
 
-    // Remove a download from the list.
     public void clearDownload(Download download) {
         int row = downloadList.indexOf(download);
-        //   download.dispose();
-        downloadList.remove(row);
-
-        // Fire table row deletion notification to table.
-        fireTableRowsDeleted(row, row);
+        if (row != -1) {
+            downloadList.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
     }
 
     public void clearDownloads(List<Download> downloads) {
         for (Download download : downloads) {
-            int index = downloadList.indexOf(download);
-            //    downloadDialog.dispose();
-            downloadList.remove(download);
-            fireTableRowsDeleted(index, index);
+            clearDownload(download);
         }
     }
 
-    public List<Download> getDownloadsByStatus(DownloadStatus downloadStatus) {
-        List<Download> selectedDownloads = new ArrayList<>();
-
+    public List<Download> getDownloadsByStatus(DownloadStatus status) {
+        List<Download> selected = new ArrayList<>();
         for (Download download : downloadList) {
-            if (download.getStatus() == downloadStatus) {
-                selectedDownloads.add(download);
+            if (download.getStatus() == status) {
+                selected.add(download);
             }
         }
-
-        return selectedDownloads;
+        return selected;
     }
 
-    // Get table's column count.
     @Override
     public int getColumnCount() {
-        return columnNames.length;
+        return COLUMN_NAMES.length;
     }
 
-    // Get a column's name.
-    public String getColumnName(int col) {
-        return columnNames[col];
-    }
-
-    // Get a column's class.
-    public Class<?> getColumnClass(int col) {
-        return columnClasses[col];
-    }
-
-    // Get table's row count.
     @Override
     public int getRowCount() {
         return downloadList.size();
     }
 
-    // Get value for a specific row and column combination.
+    @Override
+    public String getColumnName(int col) {
+        return COLUMN_NAMES[col];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int col) {
+        return COLUMN_CLASSES[col];
+    }
+
     @Override
     public Object getValueAt(int row, int col) {
         Download download = downloadList.get(row);
         switch (col) {
-            case 0: // URL
-                return download.getDownloadName();
-            case 1: // Size
+            case 0: return download.getDownloadName();
+            case 1:
                 String size = String.valueOf(download.getFormattedSize());
-                return (size.equals("-1")) ? "" : size;
-            case 2: // Progress
-                return download.getProgress();
-            case 3: // Transfer Rate
-                return download.getTransferRate();
-            case 4: // Status
-                return download.getStatus().getDesc(); // download.STATUSES[download.getStatus().ordinal()]
-            case 5: // Status
-                return download.getDescription();
+                return "-1".equals(size) ? "" : size;
+            case 2: return download.getProgress();
+            case 3: return download.getTransferRate();
+            case 4: return download.getStatus().getDesc();
+            case 5: return download.getDescription();
+            default: return null;
         }
-        return null;
     }
-
-    /* Update is called when a download notifies its
-       observers of any changes */
-    //   public void update(Observable o, Object arg) {
-    //      int index = downloadList.indexOf(o);
-    // Fire table row update notification to table.
-    //      fireTableRowsUpdated(index, index);
-    //   }
 
     @Override
-    public void downloadStatusChanged(Download download) { //// TODO ???????????????? use Event
+    public void downloadStatusChanged(Download download) {
         int index = downloadList.indexOf(download);
-        // Fire table row update notification to table.
-        fireTableRowsUpdated(index, index);
+        if (index != -1) {
+            fireTableRowsUpdated(index, index);
+        }
     }
-
 }

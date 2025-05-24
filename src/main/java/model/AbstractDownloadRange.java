@@ -66,7 +66,7 @@ public abstract class AbstractDownloadRange implements DownloadRange, Callable<V
 
     private Vector<DownloadRangeStatusListener> downloadRangeStatusListeners;
 
-    public AbstractDownloadRange(int number, URL url ,File downloadRangeFile, int startRange, int endRange) {
+    public AbstractDownloadRange(int number, URL url, File downloadRangeFile, int startRange, int endRange) {
         //     this.id = id;
         this.number = number;
         this.url = url;
@@ -82,216 +82,140 @@ public abstract class AbstractDownloadRange implements DownloadRange, Callable<V
         downloadRangeStatusListeners = new Vector<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getId() {
         return id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public URL getUrl() {
         return url;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setUrl(URL url) {
         this.url = url;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumber() {
         return number;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setNumber(int number) {
         this.number = number;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getRangeSize() {
         return rangeSize;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRangeSize(int rangeSize) {
         this.rangeSize = rangeSize;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getRangeDownloaded() {
         return rangeDownloaded;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRangeDownloaded(int rangeDownloaded) {
         this.rangeDownloaded = rangeDownloaded;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getStartRange() {
         return startRange;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStartRange(int startRange) {
         this.startRange = startRange;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getEndRange() {
         return endRange;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setEndRange(int endRange) {
         this.endRange = endRange;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public File getDownloadRangeFile() {
         return downloadRangeFile;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setDownloadRangeFile(File downloadRangeFile) {
         this.downloadRangeFile = downloadRangeFile;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getConnectTimeout() {
         return connectTimeout;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getReadTimeout() {
         return readTimeout;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public synchronized void addDownloadRangeStatusListener(DownloadRangeStatusListener downloadRangeStatusListener) { // todo may be go to DownloadRange
+    public synchronized void addDownloadRangeStatusListener(
+            DownloadRangeStatusListener downloadRangeStatusListener) { // todo may be go to DownloadRange
         Objects.requireNonNull(downloadRangeStatusListener, "downloadRangeStatusListener");
         if (!downloadRangeStatusListeners.contains(downloadRangeStatusListener)) {
             downloadRangeStatusListeners.addElement(downloadRangeStatusListener);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized void deleteDownloadRangeStatusListener(DownloadRangeStatusListener downloadRangeStatusListener) {
         Objects.requireNonNull(downloadRangeStatusListener, "downloadRangeStatusListener");
         downloadRangeStatusListeners.removeElement(downloadRangeStatusListener);
     }
 
-
     // Pause this download.
     @Override
     public void disConnect() {
-        if (connectionStatus == ConnectionStatus.CONNECTING || connectionStatus == ConnectionStatus.SEND_GET || connectionStatus == ConnectionStatus.RECEIVING_DATA )
+        if (connectionStatus == ConnectionStatus.CONNECTING || connectionStatus == ConnectionStatus.SEND_GET || connectionStatus == ConnectionStatus.RECEIVING_DATA)
             connectionStatus = ConnectionStatus.DISCONNECTING;
         stop = true;
-   //     thread.interrupt();
-        stateChanged(0); // TODO two time call and print "disconnect from download .... "
+        stateChanged(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void resume() {
         if (connectionStatus != ConnectionStatus.COMPLETED) {
@@ -319,9 +243,6 @@ public abstract class AbstractDownloadRange implements DownloadRange, Callable<V
             downloadRangeStatusListener.downloadStatusChanged(this, readed);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void resetData() {
         rangeSize = -1;
@@ -331,8 +252,10 @@ public abstract class AbstractDownloadRange implements DownloadRange, Callable<V
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AbstractDownloadRange that = (AbstractDownloadRange) o;
         return id == that.id &&
                 number == that.number &&

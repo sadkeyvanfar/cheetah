@@ -31,46 +31,32 @@ import java.awt.*;
 public class OptionsPanels extends JPanel implements OptionsCategoryPanelListener {
 
     private PreferenceGeneralPanel preferenceGeneralPanel;
-    //   private PreferenceFileTypesPanel preferenceFileTypesPanel;
     private PreferenceSavePanel preferenceSavePanel;
     private PreferenceDownloadPanel preferenceDownloadPanel;
     private PreferenceConnectionPanel preferenceConnectionPanel;
     private PreferenceProxyPanel preferenceProxyPanel;
     private PreferenceSitesLoginPanel preferenceSitesLoginPanel;
-    //   private PreferenceDialUpVPN preferenceDialUpVPN;
-    //   private PreferenceSoundPanel preferenceSoundPanel;
     private PreferenceInterfacePanel preferenceInterfacePanel;
 
     private CardLayout cardLayout;
 
-    private PreferencesDTO preferencesDTO;
-
-
     public OptionsPanels(JFrame parent, PreferencesDTO preferencesDTO) {
-        this.preferencesDTO = preferencesDTO;
-
         preferenceGeneralPanel = new PreferenceGeneralPanel(preferencesDTO.getPreferencesGeneralDTO());
-        //   preferenceFileTypesPanel = new PreferenceFileTypesPanel();
         preferenceSavePanel = new PreferenceSavePanel(preferencesDTO.getPreferencesSaveDTO());
         preferenceDownloadPanel = new PreferenceDownloadPanel();
         preferenceConnectionPanel = new PreferenceConnectionPanel(preferencesDTO.getPreferencesConnectionDTO());
         preferenceProxyPanel = new PreferenceProxyPanel(preferencesDTO.getPreferencesProxyDTO());
         preferenceSitesLoginPanel = new PreferenceSitesLoginPanel();
-        //   preferenceDialUpVPN = new PreferenceDialUpVPN();
-        //   preferenceSoundPanel = new PreferenceSoundPanel();
         preferenceInterfacePanel = new PreferenceInterfacePanel(preferencesDTO.getPreferencesInterfaceDTO(), parent);
 
         cardLayout = new CardLayout();
         setLayout(cardLayout);
         add(preferenceGeneralPanel, "General");
-        //   preferenceCards.add(preferenceFileTypesPanel, "File Types");
         add(preferenceSavePanel, "Save To");
         add(preferenceDownloadPanel, "download");
         add(preferenceConnectionPanel, "Connection");
         add(preferenceProxyPanel, "Proxy");
         add(preferenceSitesLoginPanel, "Site Login");
-        //   preferenceCards.add(preferenceDialUpVPN, "dial Up / VPN");
-        //    preferenceCards.add(preferenceSoundPanel, "Sounds");
         add(preferenceInterfacePanel, "Interface");
 
         cardLayout.show(this, "General");
@@ -95,14 +81,11 @@ public class OptionsPanels extends JPanel implements OptionsCategoryPanelListene
     public void setPanelBackgroundColor(Color color) {
         this.setBackground(color);
         preferenceGeneralPanel.setBackground(color);
-        //    preferenceFileTypesPanel.setBackground(color);
         preferenceSavePanel.setBackground(color);
         preferenceDownloadPanel.setBackground(color);
         preferenceConnectionPanel.setBackground(color);
         preferenceProxyPanel.setBackground(color);
         preferenceSitesLoginPanel.setBackground(color);
-        //    preferenceDialUpVPN.setBackground(color);
-        //    preferenceSoundPanel.setBackground(color);
         preferenceInterfacePanel.setBackground(color);
     }
 

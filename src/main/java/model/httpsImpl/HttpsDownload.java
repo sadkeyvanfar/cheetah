@@ -68,14 +68,14 @@ public class HttpsDownload extends AbstractDownload implements Download {
 
             // Make sure response code is in the 200 range.
             if (responseCode / 100 != 2) {
-                //        error();
+                error();
                 status = DownloadStatus.ERROR;
             }
 
             // Check for valid content length.
             int contentLength = connection.getContentLength();
             if (contentLength < 1) {
-                //         error();
+                error();
                 status = DownloadStatus.ERROR;
             }
 
@@ -83,15 +83,10 @@ public class HttpsDownload extends AbstractDownload implements Download {
               hasn't been already set. */
             if (size == -1) {
                 size = contentLength;
-                //         stateChanged();
-                //        status = DownloadStatus.ERROR;
             }
 
             resumeCapability = responseCode == 206;
-
             notifyStatusChanged();
-
-            //         createDownloadRanges(connection, partCount);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             error();
@@ -99,7 +94,7 @@ public class HttpsDownload extends AbstractDownload implements Download {
             e.printStackTrace();
             error();
         } finally {
-            if (connection != null) ///???
+            if (connection != null)
                 connection.disconnect();
         }
 

@@ -86,8 +86,6 @@ public class HttpDownload extends AbstractDownload implements Download {
               hasn't been already set. */
             if (size == -1) {
                 size = contentLength;
-                //         stateChanged();
-                //        status = DownloadStatus.ERROR;
             }
 
             resumeCapability = responseCode == 206;
@@ -103,7 +101,7 @@ public class HttpDownload extends AbstractDownload implements Download {
             e.printStackTrace();
             error();
         } finally {
-            if (connection != null) ///???
+            if (connection != null)
                 connection.disconnect();
         }
 
@@ -111,9 +109,6 @@ public class HttpDownload extends AbstractDownload implements Download {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void createDownloadRanges() {
         int partSize= ConnectionUtil.getPartSizeOfDownload(size, partCount);
@@ -125,7 +120,6 @@ public class HttpDownload extends AbstractDownload implements Download {
         // if connection is able to part download
         if (responseCode == 206) {
             for (int i = 0;  i < partCount; i++) {
-                //   String fileName = ConnectionUtil.getFileName(url);
                 String partFileName = downloadName + ".00" + (i + 1);
                 downloadRange = new HttpDownloadRange(i + 1, url, new File(downloadRangePath + File.separator + downloadName + File.separator + partFileName), startRange, endRange);
 
@@ -133,8 +127,6 @@ public class HttpDownload extends AbstractDownload implements Download {
 
                 downloadRange.setConnectTimeout(connectTimeout);
                 downloadRange.setReadTimeout(readTimeout);
-
-          //      downloadRange.resume();
 
                 startRange = endRange + 1;
                 if (i != partCount - 2) {
@@ -144,16 +136,13 @@ public class HttpDownload extends AbstractDownload implements Download {
                 }
             }
         } else {
-            //     String fileName = ConnectionUtil.getFileName(url);
             String partFileName = downloadName + ".00" + 1;
             downloadRange = new HttpDownloadRange(1, url, new File(downloadRangePath + File.separator + downloadName + File.separator + partFileName), startRange, size);
             addDownloadRange(downloadRange);
             downloadRange.setConnectTimeout(connectTimeout);
             downloadRange.setReadTimeout(readTimeout);
-        //    downloadRange.resume();
         }
         if (downloadInfoListener != null)
             downloadInfoListener.downloadNeedSaved(this);
-   //     startTransferRate();
     }
 }

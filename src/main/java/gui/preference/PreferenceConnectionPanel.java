@@ -127,7 +127,6 @@ class PreferenceConnectionPanel extends PreferenceJPanel {
 
         GridBagConstraints gc = new GridBagConstraints();
 
-
         ///////////////// First row ////////////////////////////////////////////
         gc.gridy = 0;
 

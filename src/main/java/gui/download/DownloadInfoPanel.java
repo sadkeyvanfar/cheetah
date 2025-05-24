@@ -36,11 +36,7 @@ class DownloadInfoPanel extends JPanel {
     // download Range table's data model.
     private DownloadRangesTableModel downloadRangesTableModel;
 
-    private Download download;
-
     public DownloadInfoPanel(Download download) {
-
-        this.download = download;
 
         setLayout(new BorderLayout());
 

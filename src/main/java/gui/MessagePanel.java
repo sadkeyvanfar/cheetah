@@ -1,22 +1,3 @@
-/*
- * Cheetah - A Free Fast Downloader
- *
- * Copyright © 2015 Saeed Kayvanfar
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 package gui;
 
 import org.apache.log4j.LogManager;
@@ -27,65 +8,71 @@ import service.StatusMessageAppender;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.util.ResourceBundle;
 
 /**
- * @author <a href="kayvanfar.sj@gmail.com">Saeed Kayvanfar</a> 9/10/2015
+ * @author <a href="kayvanfar.sj@gmail.com">Saeed Kayvanfar</a>
  */
 class MessagePanel extends JPanel {
 
-    // Logger
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final Logger messageLogger = Logger.getLogger("message");
+    private static final Logger logger = Logger.getLogger(MessagePanel.class);
+    private static final Logger messageLogger = Logger.getLogger("message");
 
-    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("messages/messages"); // NOI18N
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages");
 
-    private JPanel messageJPanel;
-    private JButton clearButton;
-    private JTextArea messageJTextArea;
+    private final JTextArea messageTextArea = new JTextArea();
+    private final JButton clearButton = new JButton(bundle.getString("messagePanel.clearButton.name"));
 
-    private JFrame parent;
-
-    public MessagePanel(JFrame parent) {
-        this.parent = parent;
+    public MessagePanel() {
         setLayout(new BorderLayout());
-        setBackground(Color.white);
+        setBackground(Color.WHITE);
 
-        messageJPanel = new JPanel();
-        messageJPanel.setBackground(Color.WHITE);
-        clearButton = new JButton(bundle.getString("messagePanel.clearButton.name"));
-        messageJPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        initClearButton();
+        initMessageArea();
+        initLogging();
+    }
 
-        Border innerBorder2 = BorderFactory.createTitledBorder("");
-        Border outerBorder2 = BorderFactory.createEmptyBorder(0,0,0,0);
-        messageJPanel.setBorder(BorderFactory.createCompoundBorder(outerBorder2, innerBorder2));
+    private void initClearButton() {
+        clearButton.addActionListener(e -> messageTextArea.setText(""));
 
-        clearButton.addActionListener(e -> messageJTextArea.setText(""));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setBackground(Color.WHITE);
+        topPanel.setBorder(createEmptyTitledBorder());
 
-        messageJPanel.add(clearButton);
-        add(messageJPanel, BorderLayout.NORTH);
+        topPanel.add(clearButton);
+        add(topPanel, BorderLayout.NORTH);
+    }
 
-        messageJTextArea = new JTextArea();
-        messageJTextArea.setEditable(false);
+    private void initMessageArea() {
+        messageTextArea.setEditable(false);
+        messageTextArea.setFont(new Font("Dialog", Font.PLAIN, 16));
+        messageTextArea.setBorder(createCompoundBorder("Logs"));
 
-        Border innerBorder = BorderFactory.createTitledBorder("Logs");
-        Border outerBorder = BorderFactory.createEmptyBorder(5,5,5,5);
-        messageJTextArea.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
-
-        messageJTextArea.setFont(new Font("Dialog", Font.PLAIN, 16));
-        JScrollPane scrollPane = new JScrollPane(messageJTextArea);
-        scrollPane.setBorder(BorderFactory.createTitledBorder(""));
+        JScrollPane scrollPane = new JScrollPane(messageTextArea);
+        scrollPane.setBorder(createEmptyTitledBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
+
         add(scrollPane, BorderLayout.CENTER);
+    }
 
-        //Define log pattern layout
+    private void initLogging() {
         PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
-
-        StatusMessageAppender appender = new StatusMessageAppender(messageJTextArea);
+        StatusMessageAppender appender = new StatusMessageAppender(messageTextArea);
         appender.setLayout(layout);
-      //  LogManager.getRootLogger().addAppender(appender);
         appender.activateOptions();
-        LogManager.getLogger("message").addAppender(appender);
+        messageLogger.addAppender(appender);
+    }
 
-      //  messageLogger.info("testtttttt");
+    private Border createCompoundBorder(String title) {
+        Border inner = BorderFactory.createTitledBorder(title);
+        Border outer = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+        return BorderFactory.createCompoundBorder(outer, inner);
+    }
+
+    private Border createEmptyTitledBorder() {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0, 0, 0, 0),
+                BorderFactory.createTitledBorder("")
+        );
     }
 }

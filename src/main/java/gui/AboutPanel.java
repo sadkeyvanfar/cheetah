@@ -36,10 +36,10 @@ class AboutPanel extends JPanel {
 
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("messages/messages"); // NOI18N
 
-    private JLabel programNameLabel;
-    private JLabel productionMessageLabel;
-    private JLabel websiteLabel;
-    private JTextArea copyrightTextArea;
+    private final JLabel programNameLabel;
+    private final JLabel productionMessageLabel;
+    private final JLabel websiteLabel;
+    private final JTextArea copyrightTextArea;
 
     public AboutPanel() {
 

@@ -1,22 +1,3 @@
-/*
- * Cheetah - A Free Fast Downloader
- *
- * Copyright © 2015 Saeed Kayvanfar
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 package gui;
 
 import gui.listener.MainToolbarListener;
@@ -25,171 +6,112 @@ import utils.Utils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * @author <a href="kayvanfar.sj@gmail.com">Saeed Kayvanfar</a> 9/10/2015
+ * @author <a href="kayvanfar.sj@gmail.com">Saeed Kayvanfar</a>
  */
 class MainToolBar extends JToolBar implements ActionListener {
 
-    private JButton newDownloadButton;
-    private JButton pauseAllButton;
-    private JButton pauseButton;
-    private JButton resumeButton;
-    private JButton clearButton;
-    private JButton clearAllCompletedButton;
-    private JButton reJoinButton;
-    private JButton reDownloadButton;
-    private JButton propertiesButton;
-    private JButton preferencesButton;
-  //  private JButton schedulerButton;
+    private final Map<MainToolbarButton, JButton> buttons = new EnumMap<>(MainToolbarButton.class);
+    private final Map<JButton, Runnable> actions = new HashMap<>();
 
     private MainToolbarListener mainToolbarListener;
 
     public MainToolBar() {
-
         setBorder(BorderFactory.createEtchedBorder());
+        ResourceBundle bundle = ResourceBundle.getBundle("messages/messages");
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("messages/messages"); // NOI18N
+        for (MainToolbarButton btn : MainToolbarButton.values()) {
+            JButton button = createLocalizedButton(bundle, btn.getKey());
+            button.addActionListener(this);
+            add(button);
 
-        newDownloadButton = new JButton(bundle.getString("mainToolBar.newDownloadButton.label"));
-        newDownloadButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.newDownloadButton.iconPath")));
-        newDownloadButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        newDownloadButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        newDownloadButton.setToolTipText(bundle.getString("mainToolBar.newDownloadButton.toolTip"));
-
-        resumeButton = new JButton(bundle.getString("mainToolBar.resumeButton.label"));
-        resumeButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.resumeButton.iconPath")));
-        resumeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        resumeButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        resumeButton.setToolTipText(bundle.getString("mainToolBar.resumeButton.toolTip"));
-
-        // These are the buttons for managing the selected download.
-        pauseButton = new JButton(bundle.getString("mainToolBar.pauseButton.label"));
-        pauseButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.pauseButton.iconPath")));
-        pauseButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        pauseButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        pauseButton.setToolTipText(bundle.getString("mainToolBar.pauseButton.toolTip"));
-
-        pauseAllButton = new JButton(bundle.getString("mainToolBar.pauseAllButton.label"));
-        pauseAllButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.pauseAllButton.iconPath")));
-        pauseAllButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        pauseAllButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        pauseAllButton.setToolTipText(bundle.getString("mainToolBar.pauseAllButton.toolTip"));
-
-        clearButton = new JButton(bundle.getString("mainToolBar.clearButton.label"));
-        clearButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.clearButton.iconPath")));
-        clearButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        clearButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        clearButton.setToolTipText(bundle.getString("mainToolBar.clearButton.toolTip"));
-
-        clearAllCompletedButton = new JButton(bundle.getString("mainToolBar.clearAllCompletedButton.label"));
-        clearAllCompletedButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.clearAllCompletedButton.iconPath")));
-        clearAllCompletedButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        clearAllCompletedButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        clearAllCompletedButton.setToolTipText(bundle.getString("mainToolBar.clearAllCompletedButton.toolTip"));
-
-        reJoinButton = new JButton(bundle.getString("mainToolBar.reJoinButton.label"));
-        reJoinButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.reJoinButton.iconPath")));
-        reJoinButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        reJoinButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        reJoinButton.setToolTipText(bundle.getString("mainToolBar.reJoinButton.toolTip"));
-
-        reDownloadButton = new JButton(bundle.getString("mainToolBar.reDownloadButton.label"));
-        reDownloadButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.reDownloadButton.iconPath")));
-        reDownloadButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        reDownloadButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        reDownloadButton.setToolTipText(bundle.getString("mainToolBar.reDownloadButton.toolTip"));
-
-        propertiesButton = new JButton(bundle.getString("mainToolBar.propertiesButton.label"));
-        propertiesButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.propertiesButton.iconPath")));
-        propertiesButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        propertiesButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        propertiesButton.setToolTipText(bundle.getString("mainToolBar.propertiesButton.toolTip"));
-
-        preferencesButton = new JButton(bundle.getString("mainToolBar.preferencesButton.label"));
-        preferencesButton.setIcon(Utils.createIcon(bundle.getString("mainToolBar.preferencesButton.iconPath")));
-        preferencesButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        preferencesButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        preferencesButton.setToolTipText(bundle.getString("mainToolBar.preferencesButton.toolTip"));
-
-        newDownloadButton.addActionListener(this);
-        pauseButton.addActionListener(this);
-        resumeButton.addActionListener(this);
-        pauseAllButton.addActionListener(this);
-        clearButton.addActionListener(this);
-        clearAllCompletedButton.addActionListener(this);
-        reJoinButton.addActionListener(this);
-        reDownloadButton.addActionListener(this);
-        propertiesButton.addActionListener(this);
-        preferencesButton.addActionListener(this);
-
-        add(newDownloadButton);
-        add(resumeButton);
-        add(pauseButton);
-        add(pauseAllButton);
-        add(clearButton);
-        add(clearAllCompletedButton);
-        add(reJoinButton);
-        add(reDownloadButton);
-        add(propertiesButton);
-        add(preferencesButton);
+            buttons.put(btn, button);
+            actions.put(button, () -> {
+                if (mainToolbarListener != null) btn.invoke(mainToolbarListener);
+            });
+        }
 
         setStateOfButtons();
     }
 
+    private JButton createLocalizedButton(ResourceBundle bundle, String baseKey) {
+        JButton button = new JButton(bundle.getString(baseKey + ".label"));
+        button.setIcon(Utils.createIcon(bundle.getString(baseKey + ".iconPath")));
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        button.setToolTipText(bundle.getString(baseKey + ".toolTip"));
+        return button;
+    }
+
     private void setStateOfButtons() {
-        resumeButton.setEnabled(false);
-        pauseButton.setEnabled(false);
-        pauseAllButton.setEnabled(true);
-        clearButton.setEnabled(false);
-        clearAllCompletedButton.setEnabled(true);
-        reJoinButton.setEnabled(false);
-        reDownloadButton.setEnabled(false);
-        propertiesButton.setEnabled(false);
-        preferencesButton.setEnabled(true);
+        setButtonState(MainToolbarButton.RESUME, false);
+        setButtonState(MainToolbarButton.PAUSE, false);
+        setButtonState(MainToolbarButton.PAUSE_ALL, true);
+        setButtonState(MainToolbarButton.CLEAR, false);
+        setButtonState(MainToolbarButton.CLEAR_ALL_COMPLETED, true);
+        setButtonState(MainToolbarButton.REJOIN, false);
+        setButtonState(MainToolbarButton.REDOWNLOAD, false);
+        setButtonState(MainToolbarButton.PROPERTIES, false);
+        setButtonState(MainToolbarButton.PREFERENCES, true);
     }
 
-    public void setMainToolbarListener(MainToolbarListener mainToolbarListener) {
-        Objects.requireNonNull(mainToolbarListener, "mainToolbarListener");
-        this.mainToolbarListener = mainToolbarListener;
+    private void setButtonState(MainToolbarButton buttonKey, boolean enabled) {
+        JButton button = buttons.get(buttonKey);
+        if (button != null) {
+            button.setEnabled(enabled);
+        }
     }
 
-    public void setStateOfButtonsControl(boolean pauseState, boolean resumeState, boolean clearState, boolean reJoinState, boolean reDownloadState, boolean propertiesState) {
-        resumeButton.setEnabled(resumeState);
-        pauseButton.setEnabled(pauseState);
-        clearButton.setEnabled(clearState);
-        reJoinButton.setEnabled(reJoinState);
-        reDownloadButton.setEnabled(reDownloadState);
-        propertiesButton.setEnabled(propertiesState);
+    public void setMainToolbarListener(MainToolbarListener listener) {
+        Objects.requireNonNull(listener, "mainToolbarListener");
+        this.mainToolbarListener = listener;
     }
 
-    // can use inner class instead this on every button
+    public void setStateOfButtonsControl(boolean pauseState, boolean resumeState,
+            boolean clearState, boolean reJoinState,
+            boolean reDownloadState, boolean propertiesState) {
+        setButtonState(MainToolbarButton.PAUSE, pauseState);
+        setButtonState(MainToolbarButton.RESUME, resumeState);
+        setButtonState(MainToolbarButton.CLEAR, clearState);
+        setButtonState(MainToolbarButton.REJOIN, reJoinState);
+        setButtonState(MainToolbarButton.REDOWNLOAD, reDownloadState);
+        setButtonState(MainToolbarButton.PROPERTIES, propertiesState);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        JButton clicked= (JButton) e.getSource();
-        if (mainToolbarListener != null) {
-            if (clicked == newDownloadButton) {
-                mainToolbarListener.newDownloadEventOccured();
-            } else if (clicked == resumeButton) {
-                mainToolbarListener.resumeEventOccured();
-            } else if (clicked == pauseButton) {
-                mainToolbarListener.pauseEventOccured();
-            }  else if (clicked == pauseAllButton) {
-                mainToolbarListener.pauseAllEventOccured();
-            } else if (clicked == clearButton) {
-                mainToolbarListener.clearEventOccured();
-            } else if (clicked == clearAllCompletedButton) {
-                mainToolbarListener.clearAllCompletedEventOccured();
-            } else if (clicked == reJoinButton) {
-                mainToolbarListener.reJoinEventOccured();
-            } else if (clicked == reDownloadButton) {
-                mainToolbarListener.reDownloadEventOccured();
-            } else if (clicked == propertiesButton) {
-                mainToolbarListener.propertiesEventOccured();
-            } else if (clicked == preferencesButton) {
-                mainToolbarListener.preferencesEventOccured();
-            }
+        Runnable action = actions.get(e.getSource());
+        if (action != null) action.run();
+    }
+
+    private enum MainToolbarButton {
+        NEW_DOWNLOAD("mainToolBar.newDownloadButton", MainToolbarListener::newDownloadEventOccured),
+        RESUME("mainToolBar.resumeButton", MainToolbarListener::resumeEventOccured),
+        PAUSE("mainToolBar.pauseButton", MainToolbarListener::pauseEventOccured),
+        PAUSE_ALL("mainToolBar.pauseAllButton", MainToolbarListener::pauseAllEventOccured),
+        CLEAR("mainToolBar.clearButton", MainToolbarListener::clearEventOccured),
+        CLEAR_ALL_COMPLETED("mainToolBar.clearAllCompletedButton", MainToolbarListener::clearAllCompletedEventOccured),
+        REJOIN("mainToolBar.reJoinButton", MainToolbarListener::reJoinEventOccured),
+        REDOWNLOAD("mainToolBar.reDownloadButton", MainToolbarListener::reDownloadEventOccured),
+        PROPERTIES("mainToolBar.propertiesButton", MainToolbarListener::propertiesEventOccured),
+        PREFERENCES("mainToolBar.preferencesButton", MainToolbarListener::preferencesEventOccured);
+
+        private final String key;
+        private final java.util.function.Consumer<MainToolbarListener> action;
+
+        MainToolbarButton(String key, java.util.function.Consumer<MainToolbarListener> action) {
+            this.key = key;
+            this.action = action;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void invoke(MainToolbarListener listener) {
+            action.accept(listener);
         }
     }
 }

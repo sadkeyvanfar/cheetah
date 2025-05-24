@@ -46,13 +46,8 @@ class ProgressRenderer extends JProgressBar implements TableCellRenderer {
             JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column)
     {
-        // Set JProgressBar's percent complete value.
-    //    setValue((int) ((Float) value).floatValue());
-   //     setString(((Float) value).floatValue() + "%");
-
         setValue((int) ((Float) value * 100) + 1);
         setString(percentFormat.format(((Float) value).floatValue()));
-
         return this;
     }
 }

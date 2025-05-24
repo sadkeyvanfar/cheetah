@@ -34,29 +34,16 @@ import java.util.ResourceBundle;
 class CategortyTreeCellRenderer implements TreeCellRenderer {
 
     private JLabel leafRenderer;
- //   private DefaultTreeCellRenderer nonLeafRenderer;
 
     private Color textForeground;
     private Color textBackground;
-    private Color selectionForeground;
-    private Color selectionBackground;
 
     private ResourceBundle defaultPreferencesBundle = java.util.ResourceBundle.getBundle("defaultPreferences"); // NOI18N
 
     public CategortyTreeCellRenderer() {
-
-        //     leafRenderer = new JCheckBox();
         leafRenderer = new JLabel();
-//        nonLeafRenderer = new DefaultTreeCellRenderer();
-//
-//        nonLeafRenderer.setLeafIcon(Utils.createIcon("images/primo48/others/all_download.png"));
-//        nonLeafRenderer.setOpenIcon(Utils.createIcon("images/primo48/others/unfinished.png"));
-//        nonLeafRenderer.setClosedIcon(Utils.createIcon("images/primo48/others/finished.png"));
-
         textForeground = UIManager.getColor("Tree.textForeground");
         textBackground = UIManager.getColor("Tree.textBackground");
-        selectionForeground = UIManager.getColor("Tree.selectionForeground");
-        selectionBackground = UIManager.getColor("Tree.selectionBackground");
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -74,11 +61,8 @@ class CategortyTreeCellRenderer implements TreeCellRenderer {
                 leafRenderer.setIcon(Utils.createIcon("images/primo48/others/unknown.png"));
             }
 
-
             if (selected) {
                 leafRenderer.setForeground(Color.blue); // selectionForeground
-          //      leafRenderer.setBackground(Color.magenta);
-                //     leafRenderer.setBackground(selectionBackground);
             }
             else {
                 leafRenderer.setForeground(textForeground);
@@ -108,8 +92,6 @@ class CategortyTreeCellRenderer implements TreeCellRenderer {
 
                 if (selected) {
                     leafRenderer.setForeground(Color.blue); // selectionForeground
-                //    leafRenderer.setBackground(Color.magenta);
-                    //     leafRenderer.setBackground(selectionBackground);
                 }
                 else {
                     leafRenderer.setForeground(textForeground);

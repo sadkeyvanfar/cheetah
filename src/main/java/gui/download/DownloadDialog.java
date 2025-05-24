@@ -36,7 +36,7 @@ public class DownloadDialog extends JDialog implements DownloadPropertiesPanelLi
     private DownloadInfoPanel downloadInfoPanel;
     private DownloadPropertiesPanel downloadPropertiesPanel;
 
-    private Download download;////**********
+    private Download download;
 
     private DownloadInfoListener downloadInfoListener;
 
@@ -75,7 +75,6 @@ public class DownloadDialog extends JDialog implements DownloadPropertiesPanelLi
         downloadPropertiesPanel.setDownloadPropertiesPanelListener(this);
 
         pack();
-     //   setSize(530, 230);
         setLocationRelativeTo(parent);
     }
 

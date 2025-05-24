@@ -39,7 +39,6 @@ import java.util.List;
 class CategoryPanel extends JPanel {
 
     private JTree categoryTree;
-    //  private ServerTreeCellEditor treeCellEditor;
 
     private List<PreferencesDirectoryCategoryDTO> preferencesDirectoryCategoryDTOs;
 
@@ -58,11 +57,6 @@ class CategoryPanel extends JPanel {
 
         categoryTree.setRootVisible(false);
         categoryTree.setShowsRootHandles(true);
-
-     //   DefaultTreeCellRenderer treeCellRenderer = new DefaultTreeCellRenderer(); // if defult want use
-        //	treeCellRenderer.setLeafIcon(Utils.createIcon("/udemy/swinglearn/images/Server16.png"));
-        //	treeCellRenderer.setOpenIcon(Utils.createIcon("/udemy/swinglearn/images/WebComponent16.png"));
-        //	treeCellRenderer.setClosedIcon(Utils.createIcon("/udemy/swinglearn/images/WebComponentAdd16.png"));
 
         CategortyTreeCellRenderer categortyTreeCellRenderer = new CategortyTreeCellRenderer();
         categoryTree.setCellRenderer(categortyTreeCellRenderer);
@@ -92,7 +86,7 @@ class CategoryPanel extends JPanel {
 
         expandAllNodes(categoryTree, 0, categoryTree.getRowCount());
 
-        setLayout(new BorderLayout()); /////**************88
+        setLayout(new BorderLayout());
 
         JScrollPane scrollPane = new JScrollPane(categoryTree);
         scrollPane.setMinimumSize(new Dimension(150, 400));
@@ -110,13 +104,11 @@ class CategoryPanel extends JPanel {
         DefaultMutableTreeNode top = new DefaultMutableTreeNode();
 
         DefaultMutableTreeNode allDownloadsBranch = new DefaultMutableTreeNode(bundle.getString("categoryPanel.allDownloadsBranch"));
-   //     allDownloadsBranch.
 
         for (PreferencesDirectoryCategoryDTO preferencesDirectoryCategoryDTO : preferencesDirectoryCategoryDTOs) {
             DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(preferencesDirectoryCategoryDTO);
             allDownloadsBranch.add(leaf);
         }
-
 
         DefaultMutableTreeNode unfinishedBranch = new DefaultMutableTreeNode(bundle.getString("categoryPanel.unfinishedBranch"));
         for (PreferencesDirectoryCategoryDTO preferencesDirectoryCategoryDTO : preferencesDirectoryCategoryDTOs) {
@@ -124,19 +116,13 @@ class CategoryPanel extends JPanel {
             unfinishedBranch.add(leaf);
         }
 
-
         DefaultMutableTreeNode finishedBranch = new DefaultMutableTreeNode(bundle.getString("categoryPanel.finishedBranch"));
         for (PreferencesDirectoryCategoryDTO preferencesDirectoryCategoryDTO : preferencesDirectoryCategoryDTOs) {
             DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(preferencesDirectoryCategoryDTO);
             finishedBranch.add(leaf);
         }
 
-
-
         DefaultMutableTreeNode queuesBranch = new DefaultMutableTreeNode(bundle.getString("categoryPanel.queuesBranch"));
-
-        //      DefaultMutableTreeNode server4 = new DefaultMutableTreeNode(new ServerInfo("London", 3, selectedServers.contains(3)));
-        //      DefaultMutableTreeNode server5 = new DefaultMutableTreeNode(new ServerInfo("Edinburgh", 4, selectedServers.contains(4)));
 
         DefaultMutableTreeNode mainDownloadQueueLeaf = new DefaultMutableTreeNode(bundle.getString("categoryPanel.mainDownloadQueueLeaf"));
         DefaultMutableTreeNode synchronizedQueueLeaf = new DefaultMutableTreeNode(bundle.getString("categoryPanel.synchronizedQueueLeaf"));
@@ -147,7 +133,6 @@ class CategoryPanel extends JPanel {
         top.add(allDownloadsBranch);
         top.add(unfinishedBranch);
         top.add(finishedBranch);
-    //    top.add(queuesBranch);
 
         return top;
     }
