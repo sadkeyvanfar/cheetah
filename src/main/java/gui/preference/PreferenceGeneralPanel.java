@@ -24,7 +24,7 @@ public class PreferenceGeneralPanel extends PreferenceJPanel {
         generalPanel = new JPanel();
         lunchOnStartupLabel = new JLabel("Launch Cheetah on startup");
         lunchOnStartupCheckBox = new JCheckBox();
-        lunchOnStartupCheckBox.setEnabled(false);  // todo for next release
+        lunchOnStartupCheckBox.setEnabled(false);
 
         layoutComponentsOfGeneralPanel();
     }
@@ -53,18 +53,6 @@ public class PreferenceGeneralPanel extends PreferenceJPanel {
         gc.anchor = GridBagConstraints.LINE_START;
         generalPanel.add(lunchOnStartupCheckBox, gc);
         ///////////////// Next row ////////////////////////////////////////////
-//        gc.gridy++;
-//
-//        gc.gridx = 0;
-//        gc.fill = GridBagConstraints.NONE;
-//        gc.anchor = GridBagConstraints.LINE_END;
-//        gc.insets = new Insets(0, 0, 0, 5);
-//        generalPanel.add(maxConnectionNumberLabel, gc);
-//
-//        gc.gridx = 1;
-//        gc.insets = new Insets(0, 0, 0, 0);
-//        gc.anchor = GridBagConstraints.LINE_START;
-//        generalPanel.add(maxConnectionNumberComboBox, gc);
 
         generalPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 

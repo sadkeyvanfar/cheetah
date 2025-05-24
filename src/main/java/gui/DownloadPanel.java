@@ -81,7 +81,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
     private List<String> fileExtensions;
     private DownloadCategory downloadCategory = DownloadCategory.ALL;
 
-    // Flag for whether or not table selection is being cleared.
+    // Flag for whether table selection is being cleared.
     private boolean clearing;
 
     private DownloadPanelListener downloadPanelListener;
@@ -369,7 +369,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
         int action = JOptionPane.showConfirmDialog(parent, "Do you realy want to delete selected file?", "Confirm delete", JOptionPane.OK_CANCEL_OPTION);
         if (action == JOptionPane.OK_OPTION) {
             if (selectedDownload == null) return;
-            //     download download = selectedDownloadDialog.getDownload();
 
             clearing = true;
             downloadsTableModel.clearDownload(selectedDownload);
@@ -377,12 +376,10 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
                 downloadController.remove(selectedDownload);
             clearing = false;
 
-            //    selectedDownloadDialog = null;
             DownloadDialog downloadDialog = getDownloadDialogByDownload(selectedDownload);
             downloadDialogs.remove(downloadDialog);
             downloadDialog.dispose();
             downloadDialog.removeDownloadInfoListener(this);
-            downloadDialog = null;
 
             downloadController.deleteDownload(selectedDownload);
 
@@ -517,7 +514,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
                 createDownloadDialog(download);
 
                 JOptionPane.showMessageDialog(parent, "Connection closed.", "Error", JOptionPane.ERROR_MESSAGE);
-          //      DownloadAskDialog downloadAskDialog = new DownloadAskDialog(parent);
             }
         });
     }

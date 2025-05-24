@@ -26,11 +26,9 @@ import javax.swing.*;
  */
 public class Application {
 
-    // Set application title.
     private final static String NAME_OF_CUI = "Cheetah";
 
     public static void main( String[] args ) {
-
         String path = System.getProperty("user.home") + "/Downloads/Cheetah Downloaded Files/Logs";
 
         System.setProperty("log.file.path", path);

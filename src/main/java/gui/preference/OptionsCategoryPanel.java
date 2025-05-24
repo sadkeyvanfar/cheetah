@@ -21,7 +21,6 @@ class OptionsCategoryPanel extends JPanel {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private JTree categoryTree;
-  //  private CategortyTreeCellRenderer categotyTreeCellRenderer;
 
     private OptionsCategoryDto optionsCategoryDto;
 
@@ -40,7 +39,6 @@ class OptionsCategoryPanel extends JPanel {
 
         categoryTree.setRootVisible(false);
         categoryTree.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-   //     categoryTree.setShowsRootHandles(true);
 
         categoryTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override

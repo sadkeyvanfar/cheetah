@@ -19,11 +19,9 @@
 
 package gui;
 
-import concurrent.BackgroundTask;
 import concurrent.DownloadExecutor;
 import controller.DialogAuthenticator;
 import enums.ConnectionType;
-import enums.DownloadCategory;
 import enums.DownloadStatus;
 import enums.ProtocolType;
 import gui.controller.DownloadController;
@@ -48,8 +46,6 @@ import java.io.InvalidClassException;
 import java.net.Authenticator;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -134,8 +130,6 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         aboutDialog = new AboutDialog(this);
 
         categoryPanel.setCategoryPanelListener((fileExtensions, downloadCategory) -> downloadPanel.setDownloadsByDownloadPath(fileExtensions, downloadCategory));
-
-        //     preferenceDialog.setDefaults(preferencesDTO);
 
         addNewDownloadDialog.setAddNewDownloadListener(textUrl -> {
             Objects.requireNonNull(textUrl, "textUrl");
@@ -333,10 +327,7 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         openFolderItem.setEnabled(false);
         resumeItem.setEnabled(false);
         pauseItem.setEnabled(false);
-        //    pauseAllButton.setEnabled(true);
         clearItem.setEnabled(false);
-        //     clearAllCompletedButton.setEnabled(true);
-        //      preferencesButton.setEnabled(true);
         reJoinItem.setEnabled(false);
         reDownloadItem.setEnabled(false);
         moveToQueueItem.setEnabled(false);
@@ -377,7 +368,6 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         // preferencesSaveDTO
         PreferencesSaveDTO preferencesSaveDTO = preferencesDTO.getPreferencesSaveDTO();
 
-
         List<PreferencesDirectoryCategoryDTO> preferencesDirectoryCategoryDTOs = new ArrayList<>();
 
         // preferencesCompressedDirCategoryDTO
@@ -390,7 +380,6 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         preferencesCompressedDirCategoryDTO.setIconPath(defaultPreferencesBundle.getString("compressedDirectoryCategory.icon"));
         preferencesDirectoryCategoryDTOs.add(preferencesCompressedDirCategoryDTO);
 
-
         PreferencesDirectoryCategoryDTO preferencesDocumentDirCategoryDTO = new PreferencesDirectoryCategoryDTO();
 
         preferencesDocumentDirCategoryDTO.setDirectoryName(defaultPreferencesBundle.getString("documentDirectoryCategory.directoryName"));
@@ -399,7 +388,6 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         preferencesDocumentDirCategoryDTO.setFileExtensions(fileDocumentExtensions);
         preferencesDocumentDirCategoryDTO.setIconPath(defaultPreferencesBundle.getString("documentDirectoryCategory.icon"));
         preferencesDirectoryCategoryDTOs.add(preferencesDocumentDirCategoryDTO);
-
 
         PreferencesDirectoryCategoryDTO preferencesMusicDirCategoryDTO = new PreferencesDirectoryCategoryDTO();
 
@@ -542,8 +530,6 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         exportDataItem.setEnabled(false);
         importDataItem.setEnabled(false);
 
-        //     fileMenu.add(exportDataItem);
-        //     fileMenu.add(importDataItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
@@ -642,16 +628,13 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         menuBar.add(downloadsMenu);
         menuBar.add(helpMenu);
 
-        showFormItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem)ev.getSource();
+        showFormItem.addActionListener(ev -> {
+            JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem)ev.getSource();
 
-                if (menuItem.isSelected()) {
-                    mainSplitPane.setDividerLocation((int) categoryPanel.getMinimumSize().getWidth());
-                }
-
-                categoryPanel.setVisible(menuItem.isSelected());
+            if (menuItem.isSelected()) {
+                mainSplitPane.setDividerLocation((int) categoryPanel.getMinimumSize().getWidth());
             }
+            categoryPanel.setVisible(menuItem.isSelected());
         });
 
         fileMenu.setMnemonic(KeyEvent.VK_F);
@@ -692,15 +675,11 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         } catch (InvalidClassException | NullPointerException e) {
             try {
                 PrefObj.putObject(preferences, "preferenceDTO", new PreferencesDTO());
-            } catch (IOException | BackingStoreException e1) {
-                e1.printStackTrace();
-            } catch (ClassNotFoundException e1) {
+            } catch (IOException | BackingStoreException | ClassNotFoundException e1) {
                 e1.printStackTrace();
             }
             JOptionPane.showMessageDialog(DownloadManagerGUI.this, "Please run program again", "Just one time", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException | BackingStoreException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | BackingStoreException | ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SecurityException se) {
             JOptionPane.showMessageDialog(DownloadManagerGUI.this, "Unable to create necessary directories. may be not have write permission, please restart program", "Directories creation problem", JOptionPane.ERROR_MESSAGE);
@@ -758,9 +737,7 @@ public class DownloadManagerGUI extends JFrame implements ActionListener {
         } else if (clicked == reDownloadItem) {
             downloadPanel.actionReDownload();
         } else if (clicked == moveToQueueItem) {
-            //        mainToolbarListener.preferencesEventOccured();
         } else if (clicked == removeFromQueueItem) {
-            //        mainToolbarListener.preferencesEventOccured();
         } else if (clicked == propertiesItem) {
             downloadPanel.actionProperties();
         } else if (clicked == aboutItem) {

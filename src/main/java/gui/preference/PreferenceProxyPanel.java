@@ -107,7 +107,6 @@ class PreferenceProxyPanel extends PreferenceJPanel implements ActionListener {
         useProxyRadioButton = new JRadioButton();
         useSocksLabel =new JLabel("Use Socks");
         useSocksRadioButton = new JRadioButton();
-     //   useProxyRadioButton.setSelected(true);
         proxySocksGroup = new ButtonGroup();
         proxySocksGroup.add(useProxyRadioButton);
         proxySocksGroup.add(useSocksRadioButton);
@@ -224,23 +223,6 @@ class PreferenceProxyPanel extends PreferenceJPanel implements ActionListener {
         gc.anchor = GridBagConstraints.LINE_START;
         proxySocksPanel.add(manualProxyRadioButton, gc);
 
-        ///////////////// Next row ////////////////////////////////////////////
-//        gc.gridy++;
-//
-//        gc.gridx = 0;
-//        gc.gridwidth = 2;
-//        gc.fill = GridBagConstraints.NONE;
-//        //     gc.anchor = GridBagConstraints.LINE_END;
-//        gc.insets = new Insets(0, 0, 0, 5);
-//        proxyPanel.add(manualProxyPanel, gc);
-
-//        gc.gridx = 1;
-//        gc.insets = new Insets(0, 0, 0, 0);
-//        gc.anchor = GridBagConstraints.LINE_START;
-//        proxyPanel.add(manualProxyRadioButton, gc);
-
-
-
         proxySocksPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         add(proxySocksPanel);
@@ -251,7 +233,6 @@ class PreferenceProxyPanel extends PreferenceJPanel implements ActionListener {
         manualProxyPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gc = new GridBagConstraints();
-
 
         ///////////////// First row ////////////////////////////////////////////
         gc.gridy = 0;

@@ -119,16 +119,10 @@ class AddNewDownloadDialog extends JDialog {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosed(e);
-
-
-
-
-
             }
         });
     }
 
-    // TODO for controls set
     private void layoutControls() {
 
         JPanel panel = new JPanel();
@@ -161,7 +155,6 @@ class AddNewDownloadDialog extends JDialog {
         ////////////Next row ////////////////////////////
         gc.gridy++;
 
-        //     gc.weighty= 10;
         gc.gridwidth = 1;
         gc.gridx = 0;
         gc.insets = rightPadding;
@@ -170,7 +163,6 @@ class AddNewDownloadDialog extends JDialog {
 
         gc.gridwidth = 2;
         gc.gridx = 1;
-        // gc.gridy = 1;
         gc.insets = noPadding;
         gc.anchor = GridBagConstraints.LINE_START;
         panel.add(useAuthorizationCheckBox, gc);
@@ -281,9 +273,9 @@ class AddNewDownloadDialog extends JDialog {
             }
         } catch (Exception e){
             e.printStackTrace();
-        }//try
+        }
 
-    }//onPaste
+    }
 
     public static void shutdownThreads() {
         backgroundExec.shutdown();

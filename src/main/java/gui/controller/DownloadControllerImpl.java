@@ -122,22 +122,4 @@ public class DownloadControllerImpl implements DownloadController {
             downloads.add(selectedDownload);
         }
     }
-
-    /**
-     * Save all current downloads to DB, useful on shutdown or periodic save
-     */
-    public void saveAll() {
-        synchronized (downloads) {
-            for (Download download : downloads) {
-                try {
-                    databaseController.save(download);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    // You can add more business logic methods here like moveToQueue, retryDownload, etc.
-
 }

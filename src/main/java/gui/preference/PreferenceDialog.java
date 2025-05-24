@@ -21,8 +21,6 @@ import java.util.Locale;
  */
 public class PreferenceDialog extends JDialog {
 
-
-
     private JPanel confirmationPanel;
     private JButton okButton;
     private JButton cancelButton;
@@ -66,12 +64,7 @@ public class PreferenceDialog extends JDialog {
 
         setPanelBackgroundColor(Color.WHITE);
 
-
-
-        //    setResizable(false);
-
         setMinimumSize(new Dimension(350,250));
-   //     setSize(800, 500);
         setLocationRelativeTo(parent);
         pack();
 
@@ -140,5 +133,4 @@ public class PreferenceDialog extends JDialog {
     public void setPreferencesListener(PreferencesListener preferencesListener) {
         this.preferencesListener = preferencesListener;
     }
-
 }
