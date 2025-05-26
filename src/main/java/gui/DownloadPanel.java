@@ -26,6 +26,7 @@ import gui.controller.DownloadController;
 import gui.download.DownloadAskDialog;
 import gui.download.DownloadDialog;
 import gui.listener.*;
+import gui.model.DownloadAction;
 import model.Download;
 import model.DownloadRange;
 import org.apache.commons.io.FileUtils;
@@ -35,17 +36,13 @@ import utils.FileUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DownloadPanel extends JPanel implements DownloadInfoListener, DownloadStatusListener, ActionListener {
+public class DownloadPanel extends JPanel implements DownloadInfoListener, DownloadStatusListener, DownloadTablePanelListener {
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final Logger messageLogger = Logger.getLogger("message");
@@ -54,25 +51,10 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
 
     private DownloadController downloadController;
 
-    private JTable downloadTable;
-
-    private JPopupMenu popup;
-    private JMenuItem openItem;
-    private JMenuItem openFolderItem;
-    private JMenuItem resumeItem;
-    private JMenuItem pauseItem;
-    private JMenuItem clearItem;
-    private JMenuItem reJoinItem;
-    private JMenuItem reDownloadItem;
-    private JMenuItem moveToQueueItem;
-    private JMenuItem removeFromQueueItem;
-    private JMenuItem propertiesItem;
-
-    // download table's data model.
-    private DownloadsTableModel downloadsTableModel;
-
     // Currently selected download.
     private Download selectedDownload;
+
+    private DownloadTablePanel downloadTablePanel;
 
     private List<DownloadDialog> downloadDialogs;
 
@@ -90,15 +72,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
 
     public List<Download> getDownloadList() {
         return downloadController.getAllDownloads();
-    }
-
-    public void addDownloadDialog(DownloadDialog downloadDialog) {
-        if (downloadDialog == null)
-            throw new NullPointerException();
-        if (!downloadDialogs.contains(downloadDialog)) {
-            downloadDialogs.add(downloadDialog);
-            downloadDialog.setDownloadInfoListener(this);
-        }
     }
 
     private void deleteDownloadDialog(DownloadDialog downloadDialog) {
@@ -130,53 +103,20 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
         downloadDialogs = new ArrayList<>();
 
         // Set up Downloads table.
-        downloadsTableModel = new DownloadsTableModel();
-        downloadTable = new JTable(downloadsTableModel);
-        popup = initPopupMenu();
+        DownloadTableModel downloadsTableModel = new DownloadTableModel();
+        downloadsTableModel.setDownloads(downloadController.getAllDownloads()); //?
+        this.downloadTablePanel = new DownloadTablePanel(downloadsTableModel);
 
-        downloadTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) { // todo check this
-                tableSelectionChanged();
-                if (downloadPanelListener != null) {
-                    downloadPanelListener.downloadSelected(selectedDownload);
-                }
-            }
-        });
+        this.downloadTablePanel.setDownloadTablePanelListener(this);
 
-        // Allow only one row at a time to be selected.
-        downloadTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Set up ProgressBar as renderer for progress column.
-        ProgressRenderer renderer = new ProgressRenderer(0, 100);
-        renderer.setStringPainted(true); // show progress text
-        downloadTable.setDefaultRenderer(JProgressBar.class, renderer);
-
-        // Set table's row height large enough to fit JProgressBar.
-        downloadTable.setRowHeight((int) renderer.getPreferredSize().getHeight());
-
-        downloadTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                super.mousePressed(e);
-                int row = downloadTable.rowAtPoint(e.getPoint());
-                if (row >= 0 && row < downloadTable.getRowCount()) {
-                    downloadTable.getSelectionModel().setSelectionInterval(row, row);
-                }
-                DownloadDialog downloadDialog = getDownloadDialogByDownload(selectedDownload);
-                if (e.getButton() == MouseEvent.BUTTON3) { // right click
-                    popup.show(downloadTable, e.getX(), e.getY());
-                } else if (e.getClickCount() == 2) {  // double click
-                    if (downloadDialog != null && !downloadDialog.isVisible()) {
-                        downloadDialog.setVisible(true);
-                    }
-                }
-            }
-        });
-
-        JScrollPane scrollPane = new JScrollPane(downloadTable);
+        JScrollPane scrollPane = new JScrollPane(downloadTablePanel);
         scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
 
+        createDownloadDialogs(parent, downloadController, downloadsTableModel);
+    }
+
+    private void createDownloadDialogs(JFrame parent, DownloadController downloadController, DownloadTableModel downloadsTableModel) {
         List<Download> downloadList = downloadController.getAllDownloads();
 
         DownloadDialog downloadDialog;
@@ -190,31 +130,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             downloadsTableModel.addDownload(download);
             downloadDialog.setDownloadRanges(download.getDownloadRangeList());
         }
-        setColumnWidths();
-        setStateOfMenuItems();
-    }
-
-    private void setStateOfMenuItems() {
-        resumeItem.setEnabled(false);
-        pauseItem.setEnabled(false);
-        clearItem.setEnabled(false);
-        moveToQueueItem.setEnabled(false);
-        removeFromQueueItem.setEnabled(false);
-    }
-
-    private void setColumnWidths(){
-        downloadTable.getColumnModel().getColumn(0).setPreferredWidth(500);
-        downloadTable.getColumnModel().getColumn(0).setMaxWidth(900);
-        downloadTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-        downloadTable.getColumnModel().getColumn(1).setMaxWidth(250);
-        downloadTable.getColumnModel().getColumn(2).setPreferredWidth(250);
-        downloadTable.getColumnModel().getColumn(2).setMaxWidth(500);
-        downloadTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-        downloadTable.getColumnModel().getColumn(3).setMaxWidth(200);
-        downloadTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-        downloadTable.getColumnModel().getColumn(4).setMaxWidth(150);
-
-        downloadTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     }
 
     private void calculateDownloaded(Download download) {
@@ -224,52 +139,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             downloaded += rangeDownloaded;
         }
         download.setDownloaded(downloaded);
-    }
-
-    private JPopupMenu initPopupMenu() {
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        openItem = new JMenuItem(bundle.getString("downloadPanel.openItem.name"));
-        openItem.addActionListener(this);
-        openFolderItem = new JMenuItem(bundle.getString("downloadPanel.openFolderItem.name"));
-        openFolderItem.addActionListener(this);
-
-        resumeItem = new JMenuItem(bundle.getString("downloadPanel.resumeItem.name"));
-        resumeItem.addActionListener(this);
-        pauseItem = new JMenuItem(bundle.getString("downloadPanel.pauseItem.name"));
-        pauseItem.addActionListener(this);
-        clearItem = new JMenuItem(bundle.getString("downloadPanel.clearItem.name"));
-        clearItem.addActionListener(this);
-
-        reJoinItem = new JMenuItem(bundle.getString("downloadPanel.reJoinItem.name"));
-        reJoinItem.addActionListener(this);
-        reDownloadItem = new JMenuItem(bundle.getString("downloadPanel.reDownloadItem.name"));
-        reDownloadItem.addActionListener(this);
-
-        moveToQueueItem = new JMenuItem(bundle.getString("downloadPanel.moveToQueueItem.name"));
-        moveToQueueItem.addActionListener(this);
-        removeFromQueueItem = new JMenuItem(bundle.getString("downloadPanel.removeFromQueueItem.name"));
-        removeFromQueueItem.addActionListener(this);
-
-        propertiesItem = new JMenuItem(bundle.getString("downloadPanel.propertiesItem.name"));
-        propertiesItem.addActionListener(this);
-
-        popupMenu.add(openItem);
-        popupMenu.add(openFolderItem);
-        popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(resumeItem);
-        popupMenu.add(pauseItem);
-        popupMenu.add(clearItem);
-        popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(reJoinItem);
-        popupMenu.add(reDownloadItem);
-        popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(moveToQueueItem);
-        popupMenu.add(removeFromQueueItem);
-        popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(propertiesItem);
-
-        return popupMenu;
     }
 
     public void addDownload(final Download download) {
@@ -326,10 +195,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
         return downloadController.getAllDownloads().size() + 1;
     }
 
-    public void refresh() {
-        downloadsTableModel.fireTableDataChanged();
-    }
-
     public void actionOpenFile() {
         downloadController.openFile(selectedDownload.getDownloadPath() + File.separator + selectedDownload.getDownloadName());
     }
@@ -357,7 +222,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
 
     // Cancel the selected download.
     public void actionPauseAll() {
-        List<Download> downloadList = downloadsTableModel.getDownloadList();
+        List<Download> downloadList = getDownloadList();
         for (Download download : downloadList) {
             if (download.getStatus() == DownloadStatus.DOWNLOADING)
                 download.pause();
@@ -371,7 +236,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             if (selectedDownload == null) return;
 
             clearing = true;
-            downloadsTableModel.clearDownload(selectedDownload);
+            downloadTablePanel.clearDownload(selectedDownload);
             if (downloadController.getAllDownloads().contains(selectedDownload))
                 downloadController.remove(selectedDownload);
             clearing = false;
@@ -390,7 +255,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             }
 
             selectedDownload = null;
-            tableSelectionChanged();
         }
     }
 
@@ -398,10 +262,10 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
     public void actionClearAllCompleted() {
         int action = JOptionPane.showConfirmDialog(parent, "Do you realy want to delete all completed files?", "Confirm delete all", JOptionPane.OK_CANCEL_OPTION);
         if (action == JOptionPane.OK_OPTION) {
-            List<Download> selectedDownloads = downloadsTableModel.getDownloadsByStatus(DownloadStatus.COMPLETE);
+            List<Download> selectedDownloads = downloadTablePanel.getDownloadsByStatus(DownloadStatus.COMPLETE);
 
             clearing = true;
-            downloadsTableModel.clearDownloads(selectedDownloads);
+            downloadTablePanel.clearDownloads(selectedDownloads);
             clearing = false;
 
             try {
@@ -418,7 +282,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            tableSelectionChanged();
         }
     }
 
@@ -445,7 +308,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             if (newDownload.getStatus() == DownloadStatus.COMPLETE) {
                 newDownload.resetData();
                 newDownload.resume();
-                tableSelectionChanged();
+              //  tableSelectionChanged();
             }
         }
     }
@@ -454,25 +317,6 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
         DownloadDialog downloadDialog = getDownloadDialogByDownload(selectedDownload);
         if (!downloadDialog.isVisible()) {
             downloadDialog.setVisible(true);
-        }
-    }
-
-    // Called when table row selection changes.
-    private void tableSelectionChanged() {
-        /* Unregister from receiving notifications
-           from the last selected download. */
-        if (selectedDownload != null)
-            selectedDownload.deleteDownloadStatusListener(DownloadPanel.this);
-
-        /* If not in the middle of clearing a download,
-           set the selected download and register to
-           receive notifications from it. */
-        if (!clearing && downloadTable.getSelectedRow() > -1) {
-            selectedDownload = downloadsTableModel.getDownload(downloadTable.getSelectedRow());
-            selectedDownload.addDownloadStatusListener(DownloadPanel.this);
-            downloadPanelListener.stateChangedEventOccured(selectedDownload.getStatus());
-        } else {
-            downloadPanelListener.stateChangedEventOccured(null);
         }
     }
 
@@ -496,7 +340,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
     @Override
     public void downloadNeedSaved(Download download) {
         downloadController.saveDownload(download);
-        downloadsTableModel.fireTableDataChanged();
+        downloadTablePanel.fireTableDataChanged();
     }
 
     @Override
@@ -538,7 +382,7 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
                 if (FilenameUtils.getExtension(download.getDownloadName()).equals(downloadPath))
                     selectedDownloads.add(download);
 
-        downloadsTableModel.setDownloads(selectedDownloads);
+        downloadTablePanel.setDownloads(selectedDownloads);
     }
 
     public void setDownloadsByDownloadPath(List<String> fileExtensions, DownloadCategory downloadCategory) { //todo use Sterategy pattern, have bad code
@@ -578,45 +422,81 @@ public class DownloadPanel extends JPanel implements DownloadInfoListener, Downl
             }
         }
 
-        downloadsTableModel.setDownloads(selectedDownloads);
+        downloadTablePanel.setDownloads(selectedDownloads);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        JMenuItem clicked= (JMenuItem) e.getSource();
+    public void onMenuAction(Download download, DownloadAction action) {
+        this.selectedDownload = download;
 
-        if (clicked == openItem) {
-            actionOpenFile();
-        } else if (clicked == openFolderItem) {
-            actionOpenFolder();
-        } else if (clicked == resumeItem) {
-            actionResume(); // todo may need  mainToolbar.setStateOfButtonsControl(false, false, false); // canceled
-        }  else if (clicked == pauseItem) {
-            actionPause();
-        } else if (clicked == clearItem) {
-            actionClear();
-        } else if (clicked == reJoinItem) {
-            actionReJoinFileParts();
-        } else if (clicked == reDownloadItem) {
-            actionReDownload();
-        } else if (clicked == moveToQueueItem) {
-    //        mainToolbarListener.preferencesEventOccured();
-        } else if (clicked == removeFromQueueItem) {
-    //        mainToolbarListener.preferencesEventOccured();
-        } else if (clicked == propertiesItem) {
-            actionProperties();
+        switch (action) {
+            case OPEN_FILE:
+                actionOpenFile();
+                break;
+            case OPEN_FOLDER:
+                actionOpenFolder();
+                break;
+            case RESUME:
+                actionResume();
+                break;
+            case PAUSE:
+                actionPause();
+                break;
+            case CLEAR:
+                actionClear();
+                break;
+            case REJOIN_PARTS:
+                actionReJoinFileParts();
+                break;
+            case REDOWNLOAD:
+                actionReDownload();
+                break;
+            case MOVE_TO_QUEUE:
+              //  downloadController.moveToQueue(download);
+                break;
+            case REMOVE_FROM_QUEUE:
+              //  downloadController.removeFromQueue(download);
+                break;
+            case PROPERTIES:
+                actionProperties();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown action: " + action);
         }
-
     }
 
-    public void setStateOfButtonsControl(boolean openState, boolean openFolderState, boolean pauseState, boolean resumeState, boolean clearState, boolean reJoinState, boolean reDownloadState, boolean propertiesState) {
-        openItem.setEnabled(openState);
-        openFolderItem.setEnabled(openFolderState);
-        pauseItem.setEnabled(pauseState);
-        resumeItem.setEnabled(resumeState);
-        clearItem.setEnabled(clearState);
-        reJoinItem.setEnabled(reJoinState);
-        reDownloadItem.setEnabled(reDownloadState);
-        propertiesItem.setEnabled(propertiesState);
+    @Override
+    public void downloadSelected(Download download) {
+        /* Unregister from receiving notifications
+           from the last selected download. */
+        if (selectedDownload != null)
+            selectedDownload.deleteDownloadStatusListener(DownloadPanel.this);
+
+        /* If not in the middle of clearing a download,
+           set the selected download and register to
+           receive notifications from it. */
+        if (!clearing && downloadTablePanel.getSelectedRow() > -1) {
+            selectedDownload = download;
+            selectedDownload.addDownloadStatusListener(DownloadPanel.this);
+            downloadPanelListener.stateChangedEventOccured(selectedDownload.getStatus());
+        } else {
+            downloadPanelListener.stateChangedEventOccured(null);
+        }
+
+        if (downloadPanelListener != null) {
+            downloadPanelListener.downloadSelected(selectedDownload);
+        }
+    }
+
+    @Override
+    public void downloadDoubleClicked(Download download) {
+        DownloadDialog downloadDialog = getDownloadDialogByDownload(selectedDownload);
+        if (downloadDialog != null && !downloadDialog.isVisible()) {
+            downloadDialog.setVisible(true);
+        }
+    }
+
+    public void setStateOfButtonsControl(boolean b, boolean b1, boolean b2, boolean b3, boolean b4, boolean b5, boolean b6, boolean b7) {
+        downloadTablePanel.setStateOfButtonsControl(b, b1, b2, b3, b4, b5, b6, b7);
     }
 }

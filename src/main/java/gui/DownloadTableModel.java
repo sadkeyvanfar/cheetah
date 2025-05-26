@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Author: Saeed Kayvanfar
  */
-public class DownloadsTableModel extends AbstractTableModel implements DownloadStatusListener {
+public class DownloadTableModel extends AbstractTableModel implements DownloadStatusListener {
 
     private static final String[] COLUMN_NAMES = {
             "Name", "Size", "Progress", "Transfer Rate", "Status", "Description"
@@ -26,7 +26,7 @@ public class DownloadsTableModel extends AbstractTableModel implements DownloadS
 
     private final List<Download> downloadList = new ArrayList<>();
 
-    public DownloadsTableModel() {}
+    public DownloadTableModel() {}
 
     public List<Download> getDownloadList() {
         return downloadList;
@@ -58,7 +58,11 @@ public class DownloadsTableModel extends AbstractTableModel implements DownloadS
         }
     }
 
-    public Download getDownload(int row) {
+    public Download removeDownloadAt(int row) {
+        return downloadList.remove(row);
+    }
+
+    public Download getDownloadAt(int row) {
         return downloadList.get(row);
     }
 
