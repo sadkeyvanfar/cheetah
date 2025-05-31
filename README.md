@@ -8,14 +8,14 @@ Version 1.0.1
 
 # Contributing
 
-This repository is contribution friendly. If you'd like to add or improve or add new features, your contribution is welcome.
+This repository is contribution-friendly. If you'd like to add or improve or add new features, your contribution is welcome.
 
 # Features
 * Downloading files in any format
 * Http, Https Support for now
 * Categorize files by their type
 * Pause ability
-* Create many connection for download default 8 connection
+* Create many connections to download default: eight connections
 * Redownload ability
 * Rejoin ability
 * Themes
