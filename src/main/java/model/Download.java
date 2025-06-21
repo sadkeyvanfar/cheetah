@@ -78,7 +78,7 @@ public interface Download {
      *
      * @return the size of this {@code Download}
      */
-    int getSize();
+    int getSize(); //todo should be long
 
     /**
      * @param size
@@ -102,7 +102,9 @@ public interface Download {
      *
      * @return the transferRate of this {@code Download}
      */
-    String getTransferRate();
+    double getTransferRate();
+
+    String getTransferRateFormatted();
 
     /**
      * Gets the protocolType of this {@code Download}.
@@ -133,7 +135,7 @@ public interface Download {
      *
      * @return amount of downloaded of this {@code Download}
      */
-    int getDownloaded();
+    int getDownloaded(); //todo should be long
 
     /**
      * @param downloaded

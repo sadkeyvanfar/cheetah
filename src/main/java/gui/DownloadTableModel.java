@@ -119,7 +119,7 @@ public class DownloadTableModel extends AbstractTableModel implements DownloadSt
                 String size = String.valueOf(download.getFormattedSize());
                 return "-1".equals(size) ? "" : size;
             case 2: return download.getProgress();
-            case 3: return download.getTransferRate();
+            case 3: return download.getTransferRateFormatted();
             case 4: return download.getStatus().getDesc();
             case 5: return download.getDescription();
             default: return null;
