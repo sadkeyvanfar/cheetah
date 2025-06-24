@@ -90,7 +90,7 @@ public class ConnectionUtil {
         return FilenameUtils.getExtension(fileName);
     }
 
-    public static String roundSizeTypeFormat(float transferRate, SizeType sizeType) {
+    public static String roundSizeTypeFormat(double transferRate, SizeType sizeType) {
         if (transferRate < 999) {
             String transferRateFormated = String.format("%.3f", transferRate);
             switch (sizeType) {
@@ -114,7 +114,7 @@ public class ConnectionUtil {
         return (int) Math.ceil((double) downloadSize / partCount); // avoids truncating
     }
 
-    public static float calculateTransferRateInUnit(float differenceDownloaded, int longTime, TimeUnit timeUnit) {
+    public static double calculateTransferRateInUnit(float differenceDownloaded, int longTime, TimeUnit timeUnit) {
 
         int unitTime;
         switch (timeUnit) {

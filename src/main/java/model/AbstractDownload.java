@@ -57,7 +57,8 @@ public abstract class AbstractDownload implements Download, DownloadRangeStatusL
     protected String downloadName;
     protected int size; // size of download in bytes
     protected volatile DownloadStatus status; // current status of download
-    protected String transferRate; // rate of transfer
+    // transferRate Bytes Per Second
+    protected double transferRate; // rate of transfer
     protected ProtocolType protocolType;
     protected String description;
 
@@ -191,8 +192,12 @@ public abstract class AbstractDownload implements Download, DownloadRangeStatusL
      * {@inheritDoc}
      */
     @Override
-    public String getTransferRate() {
+    public double getTransferRate() {
         return transferRate;
+    }
+
+    public String getTransferRateFormatted() {
+        return ConnectionUtil.roundSizeTypeFormat(transferRate   , SizeType.BYTE) + "/sec";
     }
 
     /**
@@ -296,7 +301,7 @@ public abstract class AbstractDownload implements Download, DownloadRangeStatusL
      */
     @Override
     public String getFormattedSize() {
-        return ConnectionUtil.roundSizeTypeFormat((float) size, SizeType.BYTE);
+        return ConnectionUtil.roundSizeTypeFormat(size, SizeType.BYTE);
     }
 
     /**
@@ -418,10 +423,10 @@ public abstract class AbstractDownload implements Download, DownloadRangeStatusL
         if (!downloadRangeList.isEmpty()) {
             for (DownloadRange downloadRange : downloadRangeList)
                 downloadRange.resume();
-            startTransferRateMonitor();
         } else {
             performDownload();
         }
+        startTransferRateMonitor();
     }
 
     // Mark this download as having an error.
@@ -449,29 +454,14 @@ public abstract class AbstractDownload implements Download, DownloadRangeStatusL
             }
 
             int currentDownloaded = downloaded;
-            float rate = ConnectionUtil.calculateTransferRateInUnit(
-                    currentDownloaded - previousDownloaded.getAndSet(currentDownloaded),
+            long bytesPerSec = currentDownloaded - previousDownloaded.getAndSet(currentDownloaded);
+            transferRate = ConnectionUtil.calculateTransferRateInUnit(
+                    bytesPerSec,
                     1000,
                     TimeUnit.SEC);
 
-            transferRate = ConnectionUtil.roundSizeTypeFormat(rate, SizeType.BYTE) + "/sec";
             notifyStatusChanged();
         }, 0, 1, java.util.concurrent.TimeUnit.SECONDS);
-    }
-
-    private long previousTime = 0;
-    private void setTransferRate(int readed) {
-        long currentTime = System.currentTimeMillis();
-        long periodTime = currentTime - previousTime;
-
-        float differenceDownloaded = ConnectionUtil.calculateTransferRateInUnit(readed, (int) periodTime, TimeUnit.SEC); // in Byte
-
-        // calculate differenceDownloaded
-        transferRate = ConnectionUtil.roundSizeTypeFormat(differenceDownloaded, SizeType.BYTE) + "/sec";
-        notifyStatusChanged();
-        previousTime = currentTime;
-
-
     }
 
     // Start or resume downloading.
